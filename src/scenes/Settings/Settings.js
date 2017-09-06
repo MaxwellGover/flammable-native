@@ -18,7 +18,7 @@ class Settings extends Component {
     this.handleSignOut = this.handleSignOut.bind(this)
   }
   handleSignOut() {
-    this.props.dispatch(signOut);
+    this.props.dispatch(signOut());
   }
   render() {
     return (

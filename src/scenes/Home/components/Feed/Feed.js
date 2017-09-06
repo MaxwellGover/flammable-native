@@ -1,17 +1,21 @@
-import React, { Component } from 'react';
-import { ScrollView } from 'react-native'; // Replace w/ FlatList
+import React from 'react';
+import { View, Text } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import styles from './styles';
+import PropTypes from 'prop-types';
 
-function Feed() {
+import { FlammableVideo } from '~/components';
+import styles from './styles';
+import globalStyles from '~/config/styles';
+
+FeedPropTypes = {
+  feed: PropTypes.array.isRequired
+}
+
+function Feed(props) {
   return (
-    <ScrollView style={styles.feedStyle}>
-      <ListItem
-        title="Packy"
-        titleStyle={styles.titleStyle}
-        containerStyle={styles.listItemStyle}
-      />
-    </ScrollView>
+    <View style={{flex: 1, backgroundColor: '#000', padding: 20}}>
+
+    </View>
   );
 }
 

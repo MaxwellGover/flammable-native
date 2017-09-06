@@ -12,15 +12,19 @@ import { fbAuth } from '~/config/settings';
 import { connect } from 'react-redux';
 import { isAuthed, notAuthed } from '~/redux/modules/authentication';
 import { Register } from '~/scenes';
+import { Splash } from '~/scenes';
+import { PreSplash } from '~/scenes';
 import { Home } from '~/scenes';
 import { Me } from '~/scenes';
 import { Settings } from '~/scenes';
+import { UploadedSongs } from '~/scenes';
+import { Record } from '~/scenes';
+import { Preview } from '~/scenes';
 import styles from './styles';
 import PropTypes from 'prop-types';
+import { getUserData } from '../../redux/modules/user';
 
-AppPropTypes = {
-  dispatch: PropTypes.func.isRequired
-}
+AppPropTypes = { dispatch: PropTypes.func.isRequired };
 
 class App extends React.Component {
   componentDidMount() {
@@ -28,12 +32,12 @@ class App extends React.Component {
     fbAuth.onAuthStateChanged((user) => {
       if (user) {
         // User is signed in.
-        this.props.dispatch(isAuthed);
-        Actions.home();
+        this.props.dispatch(isAuthed(user.uid));
+        this.props.dispatch(getUserData(user.uid));
       } else {
         // No user is signed in.
-        this.props.dispatch(notAuthed);
-        Actions.register();
+        this.props.dispatch(notAuthed());
+        Actions.splash();
       }
     });
   }
@@ -44,13 +48,27 @@ class App extends React.Component {
       <Router>
         <Scene key="root">
           <Scene
+            key="preSplash"
+            title="PreSplash"
+            component={PreSplash}
+            hideNavBar={true}
+            initial={true}
+          />
+          <Scene
+            key="splash"
+            title="Splash"
+            component={Splash}
+            hideNavBar={true}
+            navigationBarStyle={{backgroundColor: '#141414'}}
+            titleStyle={{color: '#FFF'}}
+          />
+          <Scene
             key="register"
             title="SIGN UP"
             component={Register}
             navigationBarStyle={{backgroundColor: '#141414'}}
             titleStyle={{color: '#FFF'}}
-            backTitle="BACK"
-            initial={true}
+            backTitle="Login"
           />
           <Scene
             key="home"
@@ -61,6 +79,7 @@ class App extends React.Component {
             renderRightButton={() => <Icon name="user" type="simple-line-icon" color="#FFF" underlayColor="#141414" iconStyle={styles.iconStyle} onPress={() => Actions.me()}/>}
             onRight={() => {}}
             hideBackImage={true}
+            backMenu={false}
           />
           <Scene
             key="me"
@@ -69,9 +88,24 @@ class App extends React.Component {
             navigationBarStyle={{backgroundColor: '#141414'}}
             titleStyle={{color: '#FFF'}}
             renderRightButton={() => <Icon name="settings" type="simple-line-icon" color="#FFF" underlayColor="#141414" iconStyle={styles.iconStyle} onPress={() => Actions.settings()}/>}
-            onRight={() => {}}
-            hideBackImage={true}
-            renderLeftButton={() => <Icon name="arrow-left" type="simple-line-icon" color="#FFF" underlayColor="#141414" iconStyle={styles.backIconStyle} onPress={() => Actions.pop()}/>}
+          />
+          <Scene
+            key="uploads"
+            title="AVAILABLE SONGS"
+            component={UploadedSongs}
+            navigationBarStyle={{backgroundColor: '#141414'}}
+            titleStyle={{color: '#FFF'}}
+            back={false}
+          />
+          <Scene
+            key="record"
+            component={Record}
+            hideNavBar={true}
+          />
+          <Scene
+            key="preview"
+            component={Preview}
+            hideNavBar={true}
           />
           <Scene
             key="settings"

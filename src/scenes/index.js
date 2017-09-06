@@ -2,3 +2,8 @@ export { default as Home } from './Home/Home';
 export { default as Me } from './Me/Me';
 export { default as Register } from './Register/Register';
 export { default as Settings } from './Settings/Settings';
+export { default as Splash } from './Splash/Splash';
+export { default as PreSplash } from './PreSplash/PreSplash';
+export { default as UploadedSongs } from './UploadedSongs/UploadedSongs';
+export { default as Record } from './Record/Record';
+export { default as Preview } from './Preview/Preview';

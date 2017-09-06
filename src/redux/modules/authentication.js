@@ -5,22 +5,22 @@ const NOT_AUTHED = 'NOT_AUTHED';
 import { fbAuth, db } from '~/config/settings';
 import { Actions } from 'react-native-router-flux';
 
-export function authenticating () {
+export function authenticating() {
   return {
     type: AUTHENTICATING
   }
 }
 
-export function notAuthed () {
+export function notAuthed() {
   return {
     type: NOT_AUTHED
   }
 }
 
-export function isAuthed (user) {
+export function isAuthed(uid) {
   return {
     type: IS_AUTHED,
-    user
+    uid
   }
 }
 
@@ -33,13 +33,15 @@ export function loginUser (user) {
 
     fbAuth.signInWithEmailAndPassword(email, password)
       .catch((error) => {
+        dispatch(notAuthed());
         const errorCode = error.code;
         const errorMessage = error.message;
         console.warn(`${errorCode}: ${errorMessage}`);
       })
       .then(() => {
+        const user = fbAuth.currentUser;
         dispatch(authenticating());
-        Actions.feed()
+        dispatch(isAuthed(user.uid));
       })
       .catch((error) => {
         console.warn(`Error in callback: ${error}`)
@@ -62,7 +64,9 @@ export function createUser (formData) {
     }).then(() => {
       // User creation was successful
       const user = fbAuth.currentUser;
-      const artistId = 'p8ROzG1xAvewhF1j3ISz0bsXwhq1';
+
+      // Get id of artist beta tester
+      const artistId = "UIYh4W4VuXcJBhZ803obFVIo9cq1";
 
       // Store basic user data
       db.ref(`users/${user.uid}`).set({
@@ -71,14 +75,14 @@ export function createUser (formData) {
         uid: user.uid
       })
 
-      // Add username to list of taken usernames
+      // Add username to list of usernames
       db.ref(`usernames/`).push(formData.username);
 
-      // If the current users Id doesn't match the artists id,
+      // If the current users id doesn't match the artists id,
       // automatically follow artist
       if (user.uid !== artistId) {
         db.ref(`users/${user.uid}/following/${artistId}`).set(true)
-          .then(() => Actions.home())
+          .then(() => dispatch(isAuthed(user.uid)))
       }
     }).catch((error) => {
       console.warn(`Error in callback: ${error}`)
@@ -90,10 +94,9 @@ export function signOut () {
   return function (dispatch, getState) {
     fbAuth.signOut().then(() => {
       // Sign-out successful.
-      dispatch(notAuthed())
-      Actions.register();
+      dispatch(notAuthed());
     }).catch((error) => {
-    // An error happened.
+      // An error happened.
       console.warn(error);
     });
   }
@@ -101,7 +104,8 @@ export function signOut () {
 
 const initialState = {
   isAuthed: false,
-  isAuthenticating: false
+  isAuthenticating: false,
+  uid: ''
 }
 
 export default function authentication (state = initialState, action) {
@@ -114,12 +118,14 @@ export default function authentication (state = initialState, action) {
     case NOT_AUTHED :
       return {
         isAuthenticating: false,
-        isAuthed: false
+        isAuthed: false,
+        uid: ''
       }
     case IS_AUTHED :
       return {
         isAuthenticating: false,
-        isAuthed: true
+        isAuthed: true,
+        uid: action.uid
       }
     default :
       return state

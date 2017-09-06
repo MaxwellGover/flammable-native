@@ -5,6 +5,7 @@
     displayName
     username
     avatar
+    activePreview
     following
       uid
 
