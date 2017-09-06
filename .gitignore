@@ -1,7 +1,8 @@
 # OSX
 #
 .DS_Store
-.schema
+schema.js
+
 # Xcode
 #
 build/
@@ -53,4 +54,4 @@ fastlane/Preview.html
 fastlane/screenshots
 
 config/
-.settings
+settings.js
